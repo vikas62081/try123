@@ -1,0 +1,273 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<title>home</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="../images/icons/logo.png" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<scrip src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../styles/home.css" />
+<style>
+.badge-notify {
+	background: red;
+	position: relative;
+	top: -20px;
+	right: 10px;
+}
+
+.my-cart-icon-affix {
+	z-index: 999;
+	position: fixed;
+}
+.names div {
+	display: inline;
+	float: left;
+}
+
+.names {
+	width: 100%;
+}
+</style>
+</head>
+
+<body style="background-color: #f2f2f2;">
+	<button onclick="topFunction()" id="myBtnbt" title="Go to top">
+		<image src="../images/icons/backtotop1.png">
+		</img>
+	</button>
+	<nav class="navbar navbar-inverse headersett">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target="#myNavbar">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand " href="#"><div id="min-img"></div></a>
+			</div>
+			<div class="collapse navbar-collapse headersetmenu" id="myNavbar">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">Home</a></li>
+					<li><a href="/about">About</a></li>
+					<li><a href="/help">Help</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><div class="dropdown">
+							<span class="glyphicon glyphicon-user dropdown-toggle"
+								data-toggle="dropdown">YourAccount</span>
+							<ul class="dropdown-menu">
+								<li><a data-toggle="modal" data-target="#myModal1"
+									style="cursor: pointer;">My Profile</a></li>
+								<li><a href="#">Orders</a></li>
+								<li><a href="#">Logout</a></li>
+							</ul>
+						</div></li>
+					<li><a><span
+							class="glyphicon glyphicon-shopping-cart my-cart-icon"></span><span
+							class="badge badge-notify my-cart-badge"></span></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="fullbody">
+		<div class="container text-center">
+			<h3>TRENDING PRODUCTS</h3>
+			<br>
+			<div class="container names">
+				<div th:each="category:${allcategory}">
+					<a th:href="@{'/getproductbycategoryhome/'+${category.categoryId}}">
+						<button type="button" class="btn btn-link "
+							style="display: inline-block; color: black; font-size: 20px;"
+							th:text="${category.categoryName}"></button>
+					</a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-3 col-xs-2 product"
+					th:each="product:${getproducts}">
+					<img th:src="${product.imgURL}" class="img-responsive image"
+						style="width: 100%" alt="Image">
+					<p th:text="${product.productName}"></p>
+					<p th:text="${product.price}"></p>
+					<button type="button" class="btn btn-danger my-cart-btn"
+						th:data-id="${product.productId}"
+						th:data-name="${product.productName}"
+						th:data-summary="${product.specification}"
+						th:data-price="${product.price}" data-quantity="1"
+						th:data-image="${product.imgURL}" th:value="${product.productId}">Add To Cart</button>
+				</div>
+			</div>
+		</div>
+		<br>
+	</div>
+<div class="modal fade" id="myModal1">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title">Profile</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<!-- Modal body -->
+					<div class="modal-body">
+						<div class="embed-responsive embed-responsive-16by9 res">
+							<iframe class="embed-responsive-item" src="/profile"></iframe>
+						</div>
+					</div>
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal"
+							style="width: 120px; height: 40px;">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	<!-- Footer -->
+	<footer class="container-fluid ">
+
+		<div class="col-sm-6 " style="width: 60%">
+			<h4 class="stext-301 cl0 p-b-30">GET IN TOUCH</h4>
+			<p class="py-2">Any questions? Let us know in store at Virtusa
+				Corporation,Navalur,Chennai,640 013,India or call us on (+91)
+				8492011750</p>
+		</div>
+		<!-- Copyright -->
+		<div class="footer-copyright text-center py-3">
+			Copyright &copy;
+			<script>
+				document.write(new Date().getFullYear());
+			</script>
+			All rights reserved.
+		</div>
+		<!-- Copyright -->
+	</footer>
+	<script>
+	<!--back to top-->
+		//Get the button
+		var mybutton = document.getElementById("myBtnbt");
+
+		// When the user scrolls down 20px from the top of the document, show the button
+		window.onscroll = function() {
+			scrollFunction()
+		};
+
+		function scrollFunction() {
+			if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+				mybutton.style.display = "block";
+			} else {
+				mybutton.style.display = "none";
+			}
+		}
+		// When the user clicks on the button, scroll to the top of the document
+		$('#myBtnbt').click(function() {
+			$('body').animate({
+				scrollTop : 0
+			}, 400);
+		});
+	</script>
+	<script src="../scripts/cart/jquery-2.2.3.min.js"></script>
+	<script type='text/javascript' src="../scripts/cart/bootstrap.min.js"></script>
+	<script type='text/javascript' src="../scripts/cart/jquery.mycart.js"></script>
+	<script type="text/javascript">
+	var list = new Array();
+	var b = new Object();
+	$.ajax({url:"/getcart",
+		type:"GET",
+		contentType:"application/json",
+		success:function(response)
+		{
+			(response.productQty).forEach(function(data){
+			list.push("{id:"+data.product.productId+",name:'"+data.product.productName+"',"+"price:"+data.product.price+",quantity:"+data.product.productId+",image:'"+data.product.imgURL+"'}");
+			});
+			console.log(JSON.stringify(list));
+		}
+	
+	});
+		$(function() {
+
+			var goToCartIcon = function($addTocartBtn) {
+				var $cartIcon = $(".my-cart-icon");
+				var $image = $(
+						'<img width="30px" height="30px" src="'
+								+ $addTocartBtn.data("image") + '"/>').css({
+					"position" : "fixed",
+					"z-index" : "999"
+				});
+				$addTocartBtn.prepend($image);
+				var position = $cartIcon.position();
+				$image.animate({
+					top : position.top,
+					left : position.left
+				}, 500, "linear", function() {
+					$image.remove();
+				});
+			}
+
+			
+		$('.my-cart-btn')
+					.myCart(
+							{
+								currencySymbol : '$',
+								classCartIcon : 'my-cart-icon',
+								classCartBadge : 'my-cart-badge',
+								classProductQuantity : 'my-product-quantity',
+								classProductRemove : 'my-product-remove',
+								classCheckoutCart : 'my-cart-checkout',
+								affixCartIcon : true,
+								showCheckoutModal : true,
+								numberOfDecimals : 2,
+								cartItems : [list
+									],
+								clickOnAddToCart : function($addTocart) {
+									goToCartIcon($addTocart);
+								},
+								afterAddOnCart : function(products, totalPrice,
+										totalQuantity) {
+								},
+								clickOnCartIcon : function($cartIcon, products,
+										totalPrice, totalQuantity) {
+								},
+								checkoutCart : function(products, totalPrice,
+										totalQuantity) {
+									var checkoutString = "Total Price: "
+											+ totalPrice + "\nTotal Quantity: "
+											+ totalQuantity;
+									checkoutString += "\n\n id \t name \t summary \t price \t quantity \t image path";
+									$.each(products,
+											function() {
+												checkoutString += ("\n "
+														+ this.id + " \t "
+														+ this.name + " \t "
+														+ this.summary + " \t "
+														+ this.price + " \t "
+														+ this.quantity
+														+ " \t " + this.image);
+											});
+									alert(checkoutString)
+								},
+								getDiscountPrice : function(products,
+										totalPrice, totalQuantity) {
+									return totalPrice;
+								}
+							});
+		});
+		
+		$('.my-cart-btn').click(function(){
+			var productId=$(this).val();
+			$.ajax({url:"/addproductquantity",
+				type:"POST",
+				contentType:"application/json",
+				data:JSON.stringify(productId),
+				success:function(response)
+				{
+					//console.log(response);
+				}
+				
+			});
+		});
+		
+	</script>
+</body>
+</html>
