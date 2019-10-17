@@ -9,6 +9,7 @@
 <scrip src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="../styles/home.css" />
+<link rel="stylesheet" type="text/css" href="../scripts/sweet-alert/sweetalert2.min.css" />
 <style>
 .badge-notify {
 	background: red;
@@ -64,9 +65,9 @@
 								<li><a href="#">Logout</a></li>
 							</ul>
 						</div></li>
-					<li><a><span
+					<li><a data-toggle="modal" data-target="#myModal"><span
 							class="glyphicon glyphicon-shopping-cart my-cart-icon"></span><span
-							class="badge badge-notify my-cart-badge"></span></a></li>
+							class="badge badge-notify my-cart-badge" id="cart-count"></span></a></li>
 				</ul>
 			</div>
 		</div>
@@ -124,6 +125,33 @@
 				</div>
 			</div>
 		</div>
+		
+		
+		 <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"><span class="glyphicon glyphicon-shopping-cart"></span> My Cart</h4>
+        </div>
+        <div class="modal-body">
+        <table class="table table-hover table-responsive" id="my-cart-table">
+         </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary my-cart-checkout">Checkout</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+</div>
+
+
 	<!-- Footer -->
 	<footer class="container-fluid ">
 
@@ -167,93 +195,38 @@
 			}, 400);
 		});
 	</script>
+	
+	<style>
+	.cart-image{
+	height:30px;
+	width:30px;}
+	</style>
 	<script src="../scripts/cart/jquery-2.2.3.min.js"></script>
 	<script type='text/javascript' src="../scripts/cart/bootstrap.min.js"></script>
 	<script type='text/javascript' src="../scripts/cart/jquery.mycart.js"></script>
+	<script type='text/javascript' src="../scripts/sweet-alert/sweetalert2.js"></script>
 	<script type="text/javascript">
-	var list = new Array();
-	var b = new Object();
+
+		function getCartProduct(){
 	$.ajax({url:"/getcart",
 		type:"GET",
 		contentType:"application/json",
 		success:function(response)
 		{
+			$("#my-cart-table").empty();
 			(response.productQty).forEach(function(data){
-			list.push("{id:"+data.product.productId+",name:'"+data.product.productName+"',"+"price:"+data.product.price+",quantity:"+data.product.productId+",image:'"+data.product.imgURL+"'}");
+				//console.log(data);
+				$('#my-cart-table').append("<tr><td style='display:none;'>"+data.productQtyId+"</td><td><img class='cart-image' src="+data.product.imgURL+"></td><td>"+data.product.productName+"</td><td>"+data.product.price+"</td><td>"+data.purchaseQty+
+						"</td><td>"+(data.product.price*data.purchaseQty)+
+						"<td title='Remove "+data.product.productName+" from Cart' class='text-center'><a href='javascript:void(0);' class='btn btn-xs btn-danger my-product-remove'>X</a></td></tr>");
 			});
-			console.log(JSON.stringify(list));
+			var rowCount = $('#my-cart-table tr').length;
+			$('#cart-count').text(rowCount);
 		}
 	
 	});
-		$(function() {
-
-			var goToCartIcon = function($addTocartBtn) {
-				var $cartIcon = $(".my-cart-icon");
-				var $image = $(
-						'<img width="30px" height="30px" src="'
-								+ $addTocartBtn.data("image") + '"/>').css({
-					"position" : "fixed",
-					"z-index" : "999"
-				});
-				$addTocartBtn.prepend($image);
-				var position = $cartIcon.position();
-				$image.animate({
-					top : position.top,
-					left : position.left
-				}, 500, "linear", function() {
-					$image.remove();
-				});
-			}
-
-			
-		$('.my-cart-btn')
-					.myCart(
-							{
-								currencySymbol : '$',
-								classCartIcon : 'my-cart-icon',
-								classCartBadge : 'my-cart-badge',
-								classProductQuantity : 'my-product-quantity',
-								classProductRemove : 'my-product-remove',
-								classCheckoutCart : 'my-cart-checkout',
-								affixCartIcon : true,
-								showCheckoutModal : true,
-								numberOfDecimals : 2,
-								cartItems : [list
-									],
-								clickOnAddToCart : function($addTocart) {
-									goToCartIcon($addTocart);
-								},
-								afterAddOnCart : function(products, totalPrice,
-										totalQuantity) {
-								},
-								clickOnCartIcon : function($cartIcon, products,
-										totalPrice, totalQuantity) {
-								},
-								checkoutCart : function(products, totalPrice,
-										totalQuantity) {
-									var checkoutString = "Total Price: "
-											+ totalPrice + "\nTotal Quantity: "
-											+ totalQuantity;
-									checkoutString += "\n\n id \t name \t summary \t price \t quantity \t image path";
-									$.each(products,
-											function() {
-												checkoutString += ("\n "
-														+ this.id + " \t "
-														+ this.name + " \t "
-														+ this.summary + " \t "
-														+ this.price + " \t "
-														+ this.quantity
-														+ " \t " + this.image);
-											});
-									alert(checkoutString)
-								},
-								getDiscountPrice : function(products,
-										totalPrice, totalQuantity) {
-									return totalPrice;
-								}
-							});
-		});
-		
+		}
+		getCartProduct();
 		$('.my-cart-btn').click(function(){
 			var productId=$(this).val();
 			$.ajax({url:"/addproductquantity",
@@ -262,12 +235,29 @@
 				data:JSON.stringify(productId),
 				success:function(response)
 				{
-					//console.log(response);
+					swal("Success", "Cart added successfully !", "success");
+					getCartProduct();
 				}
 				
 			});
 		});
 		
+		 $('#my-cart-table').on('click','a.my-product-remove',function(){
+				var currow=$(this).closest('tr');
+				var productQtyId=currow.find('td:eq(0)').text();
+				var productName=currow.find('td:eq(2)').text();
+				$.ajax({url:"/deleteproductquantity",
+					type:"POST",
+					contentType:"application/json",
+					data:JSON.stringify(productQtyId),
+					success:function(response)
+					{
+						swal("Successfully", productName+" Removed from cart", "error");
+						getCartProduct();
+					}
+					
+				});
+		 });
 	</script>
 </body>
 </html>
